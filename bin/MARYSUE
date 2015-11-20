@@ -1,0 +1,167 @@
+#!/usr/bin/env python
+
+"""Usage: MARYSUE {options}
+
+MARYSUE - Original Generator!  Do Not Steal!!1!
+
+"""
+
+# --------
+from os.path import realpath, dirname, join
+import sys
+sys.path.insert(0, join(dirname(realpath(sys.argv[0])), '..', 'src'))
+sys.path.insert(0, join(dirname(realpath(sys.argv[0])), '..'))
+# --------
+
+from optparse import OptionParser
+
+import marysue.util as random
+from marysue.plot import *
+from marysue.plotter import Plotter
+from marysue.publisher import Novel
+
+from stories import serenity
+
+
+### default chapter configuration ###
+
+CHAPTER_COUNT = 40
+
+
+#print random.randint(0, 100)
+
+chapters = [
+    {
+        'position': 'beginning',
+        'plot_min': [
+            (LoseItem, 1),
+        ],
+        'plot_max': [
+            (LoseItem, 1),
+            (Kidnapping, 0),
+        ],
+    },
+] + [
+    {
+        'position': 'beginning',
+    } for _ in xrange(0, 9)
+] + [
+    {
+        'position': 'middle',
+    } for _ in xrange(0, CHAPTER_COUNT - (10 + 10))
+] + [
+    {
+        'position': 'end',
+    } for _ in xrange(0, 9)
+] + [
+    {
+        'position': 'final',
+        'plot_min': [
+            (RomanticResolution, 1),
+        ],
+        'plot_max': [
+            (RomanticResolution, 1),
+            (AwkwardTension, 0),
+            (RomanticTension, 0),
+            (AwkwardCombat, 0),
+        ],
+    }
+]
+
+for n, chapter in enumerate(chapters):
+    chapter.setdefault('plot_depth', 5)
+    chapter.setdefault('plot_constraints', [])
+    chapter.setdefault('plot_max', [])
+    chapter.setdefault('plot_min', [])
+    if n < (CHAPTER_COUNT / 4):
+        chapter['plot_max'].append((AwkwardTension, 1))
+    if n < (CHAPTER_COUNT / 2):
+        chapter['plot_max'].append((RomanticTension, 0))
+    if chapter['position'] != 'final':
+        chapter['plot_max'].append((RomanticResolution, 0))
+
+
+### MAIN ###
+
+optparser = OptionParser(__doc__.strip())
+optparser.add_option('--debug', action="store_true", default=False,
+                     help="trace some things inside the compiler")
+optparser.add_option('--dump', action="store_true", default=False,
+                     help="show story tree in schematic format")
+optparser.add_option('--plot-depth', default='5',
+                     help="depth of plot to generate")
+optparser.add_option('--plot-max', default=None,
+                     help="comma-seperated list of classname:count "
+                          "and the generated story will contain at most "
+                          "count occurrences of each plot class")
+optparser.add_option('--plot-min', default=None,
+                     help="comma-seperated list of classname:count "
+                          "and the generated story will contain at least "
+                          "count occurrences of each plot class")
+optparser.add_option('--synopsis', action="store_true", default=False,
+                     help="just dump a synopsis of the plot")
+optparser.add_option('--disable-shuffle-demon', action="store_true", default=False,
+                     help="disable the Shuffle Demon")
+optparser.add_option('--publish', action="store_true", default=False,
+                     help="generate an HTML5 file and open in browser "
+                          "(requires pandoc and firefox)")
+
+(options, args) = optparser.parse_args(sys.argv[1:])
+
+
+### configure things ###
+
+if options.disable_shuffle_demon:
+    random.shuffle_demon.enabled = False
+
+
+def parse_plot_constraint(s):
+    from marysue.plot import get_plot_class
+    name, count = s.split(':')
+    return (get_plot_class(name), count)
+
+
+plot_min = [parse_plot_constraint(s) for s in options.plot_min.split(',')] if options.plot_min else ()
+plot_max = [parse_plot_constraint(s) for s in options.plot_max.split(',')] if options.plot_max else ()
+
+
+generate_front_matter = True
+if plot_min or plot_max:
+    generate_front_matter = False
+    chapters = (
+        {
+            'plot_min': plot_min,
+            'plot_max': plot_max,
+            'plot_depth': int(options.plot_depth),
+        },
+    )
+
+### do the generation! ###
+
+novel = Novel(
+    chapters,
+    generate_front_matter=generate_front_matter,
+    synopsis=options.synopsis,
+    dump=options.dump
+)
+
+for n, chapter in enumerate(chapters):
+    plotter = Plotter(
+        serenity.protagonists,
+        serenity.antagonists,
+        serenity.goons,
+        serenity.macguffins,
+        serenity.settings,
+    )
+    novel.generate_chapter(n, plotter, **chapter)
+    if n % 6 == 5:
+        serenity.serenity.promote()
+
+novel.trim()
+
+### publish
+
+if options.publish:
+    novel.publish()
+else:
+    print novel.text
