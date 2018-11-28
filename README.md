@@ -24,4 +24,4 @@ This code is in the public domain; see the file [UNLICENSE](UNLICENSE)
 in this directory.
 
 [NaNoGenMo 2015]:     https://github.com/dariusk/NaNoGenMo-2015/
-[A Time for Destiny]: https://cdn.rawgit.com/catseye/MARYSUE/11a42965a96bcdcafc88d64a3b558c87d7dde45d/generated/A_Time_for_Destiny.html
+[A Time for Destiny]: http://catseye.tc/modules/MARYSUE/generated/A_Time_for_Destiny.html
