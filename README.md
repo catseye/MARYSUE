@@ -23,5 +23,10 @@ HTML file and display it locally (requires pandoc and Firefox),
 This code is in the public domain; see the file [UNLICENSE](UNLICENSE)
 in this directory.
 
+Also in this repository is a short article describing this generator, written
+during NaNoGenMo 2015 (while the generator was still under construction):
+[Overview of a Story Compiler][].
+
 [NaNoGenMo 2015]:     https://github.com/dariusk/NaNoGenMo-2015/
 [A Time for Destiny]: http://catseye.tc/modules/MARYSUE/generated/A_Time_for_Destiny.html
+[Overview of a Story Compiler]: doc/Overview%20of%20a%20Story%20Compiler.md
