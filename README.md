@@ -1,6 +1,14 @@
 MARYSUE
 =======
 
+_See also:_ [The Swallows](https://github.com/catseye/The-Swallows#readme) (2013)
+∘ [NaNoGenLab](https://github.com/catseye/NaNoGenLab#readme) (2014)
+∘ [2017 Entries](https://github.com/catseye/NaNoGenMo-Entries-2017#readme)
+∘ [2018 Entries](https://github.com/catseye/NaNoGenMo-Entries-2018#readme)
+∘ [2019 Entries](https://github.com/catseye/NaNoGenMo-Entries-2019#readme)
+
+- - - -
+
 Original Generator!  Do Not Steal!!1!
 
 Built for NaNoGenMo 2015.  Self-contained; requires only Python 2.7.
